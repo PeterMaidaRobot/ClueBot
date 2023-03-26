@@ -1,6 +1,12 @@
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
+# These are generated from the build_ui_files.sh bash script
+ui_*.py
+
+# Qt user project file
+*.pyproject.user
+
 *~
 *.autosave
 *.a
