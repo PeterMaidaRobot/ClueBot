@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox
+from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout
 from ui_mainwindow import Ui_MainWindow
 from clue_bot import ClueBot
 
@@ -11,6 +11,8 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        self.resize(1200, 800)
+
         # Connect signals
         self.ui.playGameBtn.clicked.connect(self.deal_cards)
         self.ui.submitDealtCardsBtn.clicked.connect(self.play_game)
@@ -21,8 +23,37 @@ class MainWindow(QMainWindow):
         self.ui.gamePlayFrame.setVisible(False)
         self.ui.dealtCardsFrame.setVisible(False)
 
-        # TODO remove this, we aren't changing inputs right now:
-#        self.play_game()
+        # Run a test
+        self.run_test()
+
+
+    def run_test(self):
+        self.deal_cards()
+
+        drawn_cards = [
+        "Prof. Plum",
+        "Mr. Green",
+        "Lead Pipe",
+        "Kitchen",
+        "Library"
+        ]
+        for i in range(self.ui.dealtSuspectsVbox.layout().count()):
+            widget = self.ui.dealtSuspectsVbox.layout().itemAt(i).widget()
+            if isinstance(widget, QCheckBox) and widget.text() in drawn_cards:
+                widget.setChecked(True)
+
+        for i in range(self.ui.dealtWeaponsVbox.layout().count()):
+            widget = self.ui.dealtWeaponsVbox.layout().itemAt(i).widget()
+            if isinstance(widget, QCheckBox) and widget.text() in drawn_cards:
+                widget.setChecked(True)
+
+        for i in range(self.ui.dealtRoomsVbox.layout().count()):
+            widget = self.ui.dealtRoomsVbox.layout().itemAt(i).widget()
+            if isinstance(widget, QCheckBox) and widget.text() in drawn_cards:
+                widget.setChecked(True)
+
+        self.play_game()
+
 
     def read_setup_inputs(self):
         # Grab all the fields from the UI setup Frame
@@ -95,6 +126,48 @@ class MainWindow(QMainWindow):
 
 
     '''
+    init_game_play_frame() will populate the comboboxes and the main grid
+    '''
+    def init_game_play_frame(self):
+        # Populate the ClueBot Play Frame
+        self.ui.whoShowedClueBotCmbBox.addItems(self.playerNames)
+        self.ui.playerToClueBotCardCmbBox.addItems(self.suspectNames)
+        self.ui.playerToClueBotCardCmbBox.addItems(self.weaponNames)
+        self.ui.playerToClueBotCardCmbBox.addItems(self.roomNames)
+
+        # Populate the Other Player Play Frame
+        self.ui.playerGuessSuspectCmbBox.addItems(self.suspectNames)
+        self.ui.playerGuessWeaponCmbBox.addItems(self.weaponNames)
+        self.ui.playerGuessRoomCmbBox.addItems(self.roomNames)
+        self.ui.whoShowedCardCmbBox.addItems(self.playerNames)
+
+        # Populate the Guess Grid
+        self.ui.guessCardTable.setColumnCount(len(self.playerNames))
+        self.ui.guessCardTable.setHorizontalHeaderLabels(self.playerNames)
+        verticalHeaderLabels = self.suspectNames + self.weaponNames + self.roomNames
+        self.ui.guessCardTable.setRowCount(len(verticalHeaderLabels))
+        self.ui.guessCardTable.setVerticalHeaderLabels(verticalHeaderLabels)
+
+        # Populate the Guess Grid with ClueBot's data...
+        # TODO
+
+        # Create the previous guesses vboxes
+        self.previousGuesses = []
+        hLayout = QHBoxLayout()
+        for player in self.playerNames:
+            playerVbox = QVBoxLayout()
+            playerVbox.addWidget(QLabel(player))
+            hLayout.addItem(playerVbox)
+            self.previousGuesses.append(playerVbox)
+
+        for i in range(len(self.previousGuesses)):
+            for c in range(5):
+                self.previousGuesses[i].addWidget(QLabel("test"))
+        self.ui.previousGuessFrame.setLayout(hLayout)
+
+
+
+    '''
     Switch to the play game State
     '''
     def play_game(self):
@@ -111,14 +184,24 @@ class MainWindow(QMainWindow):
         dealtRooms=self.dealtRooms
         )
 
+        self.init_game_play_frame()
+
         # Switch UI Frames to play game Frame
         self.ui.dealtCardsFrame.setVisible(False)
         self.ui.gamePlayFrame.setVisible(True)
 
 
     def submit_turn(self):
+        print(self.ui.playerGuessSuspectCmbBox.currentText())
+        print(self.ui.playerGuessWeaponCmbBox.currentText())
+        print(self.ui.playerGuessRoomCmbBox.currentText())
+        print(self.ui.whoShowedCardCmbBox.currentText())
+
         self.clue_bot.submit_turn()
 
 
     def submit_cluebot_turn(self):
-        pass
+        print(self.ui.whoShowedClueBotCmbBox.currentText())
+        print(self.ui.playerToClueBotCardCmbBox.currentText())
+
+        self.clue_bot.submit_cluebot_turn()
