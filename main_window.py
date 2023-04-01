@@ -106,23 +106,24 @@ class MainWindow(QMainWindow):
 
 
     def read_dealt_inputs(self):
+        # For each card, store a tuple of (index, name). We will mainly use the index
         self.dealtSuspects = []
         for i in range(self.ui.dealtSuspectsVbox.layout().count()):
             widget = self.ui.dealtSuspectsVbox.layout().itemAt(i).widget()
             if isinstance(widget, QCheckBox) and widget.isChecked():
-                self.dealtSuspects.append(widget.text())
+                self.dealtSuspects.append( (i, widget.text()) )
 
         self.dealtWeapons = []
         for i in range(self.ui.dealtWeaponsVbox.layout().count()):
             widget = self.ui.dealtWeaponsVbox.layout().itemAt(i).widget()
             if isinstance(widget, QCheckBox) and widget.isChecked():
-                self.dealtWeapons.append(widget.text())
+                self.dealtWeapons.append( (i, widget.text()) )
 
         self.dealtRooms = []
         for i in range(self.ui.dealtRoomsVbox.layout().count()):
             widget = self.ui.dealtRoomsVbox.layout().itemAt(i).widget()
             if isinstance(widget, QCheckBox) and widget.isChecked():
-                self.dealtRooms.append(widget.text())
+                self.dealtRooms.append( (i, widget.text()) )
 
 
     '''
