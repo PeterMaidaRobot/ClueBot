@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout
+from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout, QTableWidgetItem
 from ui_mainwindow import Ui_MainWindow
 from clue_bot import ClueBot
 
@@ -126,7 +126,8 @@ class MainWindow(QMainWindow):
 
 
     '''
-    init_game_play_frame() will populate the comboboxes and the main grid
+    init_game_play_frame() will populate the comboboxes, the main guess card table/grid,
+    and the previous guesses vbox area
     '''
     def init_game_play_frame(self):
         # Populate the ClueBot Play Frame
@@ -149,7 +150,9 @@ class MainWindow(QMainWindow):
         self.ui.guessCardTable.setVerticalHeaderLabels(verticalHeaderLabels)
 
         # Populate the Guess Grid with ClueBot's data...
-        # TODO
+        for row in range(self.ui.guessCardTable.rowCount()):
+            for col in range(self.ui.guessCardTable.columnCount()):
+                self.ui.guessCardTable.setItem(row, col, QTableWidgetItem(self.get_cell_guess(row, col)))
 
         # Create the previous guesses vboxes
         self.previousGuesses = []
@@ -191,17 +194,53 @@ class MainWindow(QMainWindow):
         self.ui.gamePlayFrame.setVisible(True)
 
 
+    '''
+    '''
+    def get_cell_guess(self, guessCardIdx, playerIdx):
+        guess = ""
+        if guessCardIdx < len(self.suspectNames):
+            guess = self.clue_bot.get_suspect_guess(playerIdx, guessCardIdx)
+        elif guessCardIdx < len(self.suspectNames) + len(self.weaponNames):
+            guess = self.clue_bot.get_weapon_guess(playerIdx, guessCardIdx - len(self.suspectNames))
+        elif guessCardIdx < len(self.suspectNames) + len(self.weaponNames) + len(self.roomNames):
+            guess = self.clue_bot.get_room_guess(playerIdx, guessCardIdx - len(self.suspectNames) - len(self.weaponNames))
+        return guess
+
+    '''
+    This will update the guess card after clue bot has made an update
+    '''
+    def update_guess_card(self):
+        # Loop through each cell in the table and get what the clue bot has for that entry
+        for row in range(self.ui.guessCardTable.rowCount()):
+            for col in range(self.ui.guessCardTable.columnCount()):
+                self.ui.guessCardTable.item(row, col).setText( self.get_cell_guess(row, col) )
+
+    '''
+    This will update the guess history tuple vbox for the players
+    '''
+    def update_guess_history(self):
+        pass
+
+    '''
+    This will update everything on the UI after a guess has occured
+    '''
+    def update_ui(self):
+        self.update_guess_card()
+        self.update_guess_history()
+
+
     def submit_turn(self):
-        print(self.ui.playerGuessSuspectCmbBox.currentText())
-        print(self.ui.playerGuessWeaponCmbBox.currentText())
-        print(self.ui.playerGuessRoomCmbBox.currentText())
-        print(self.ui.whoShowedCardCmbBox.currentText())
+        print(self.ui.whoShowedCardCmbBox.currentText() + " showed one of (" +
+            self.ui.playerGuessSuspectCmbBox.currentText() + ", " +
+            self.ui.playerGuessWeaponCmbBox.currentText() + ", " +
+            self.ui.whoShowedCardCmbBox.currentText() + ")")
 
         self.clue_bot.submit_turn()
+        self.update_ui()
 
 
     def submit_cluebot_turn(self):
-        print(self.ui.whoShowedClueBotCmbBox.currentText())
-        print(self.ui.playerToClueBotCardCmbBox.currentText())
+        print(self.ui.whoShowedClueBotCmbBox.currentText() + " showed ClueBot " +
+            self.ui.playerToClueBotCardCmbBox.currentText())
 
         self.clue_bot.submit_cluebot_turn()

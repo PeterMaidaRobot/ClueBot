@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>1029</height>
+    <height>1043</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,7 @@
   </property>
   <property name="styleSheet">
    <string notr="true">background-color: #EDC9AF; /* manilla */
-color: #140D07; /* dark brown */
-</string>
+color: #140D07; /* dark brown */</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -99,7 +98,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="whoShowedClueBotCmbBox"/>
+           <widget class="QComboBox" name="whoShowedClueBotCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_13">
@@ -109,7 +112,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="playerToClueBotCardCmbBox"/>
+           <widget class="QComboBox" name="playerToClueBotCardCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="submitClueBotTurnBtn">
@@ -151,7 +158,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="playerGuessSuspectCmbBox"/>
+           <widget class="QComboBox" name="playerGuessSuspectCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_6">
@@ -161,7 +172,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="playerGuessWeaponCmbBox"/>
+           <widget class="QComboBox" name="playerGuessWeaponCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_7">
@@ -171,7 +186,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="playerGuessRoomCmbBox"/>
+           <widget class="QComboBox" name="playerGuessRoomCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QLabel" name="label_8">
@@ -188,7 +207,11 @@ color: #140D07; /* dark brown */
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="whoShowedCardCmbBox"/>
+           <widget class="QComboBox" name="whoShowedCardCmbBox">
+            <property name="styleSheet">
+             <string notr="true">QComboBox::item:selected { background-color: #FFC69D; }</string>
+            </property>
+           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="submitTurnBtn">
