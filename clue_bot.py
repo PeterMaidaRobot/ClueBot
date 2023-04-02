@@ -141,5 +141,11 @@ class ClueBot:
 
     '''
     '''
-    def submit_cluebot_turn(self):
-        print("test")
+    def submit_cluebot_turn(self, playerIdx, suspectIdx=None, weaponIdx=None, roomIdx=None):
+        if suspectIdx != None:
+            self.player_has_suspect(playerIdx, suspectIdx)
+        if weaponIdx != None:
+            self.player_has_weapon(playerIdx, weaponIdx)
+        if roomIdx != None:
+            self.player_has_room(playerIdx, roomIdx)
+

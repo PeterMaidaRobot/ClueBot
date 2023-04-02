@@ -279,4 +279,15 @@ class MainWindow(QMainWindow):
         print(self.ui.whoShowedClueBotCmbBox.currentText() + " showed ClueBot " +
             self.ui.playerToClueBotCardCmbBox.currentText())
 
-        self.clue_bot.submit_cluebot_turn()
+        guessCardIdx = self.ui.playerToClueBotCardCmbBox.currentIndex()
+        if guessCardIdx < len(self.suspectNames):
+            self.clue_bot.submit_cluebot_turn(playerIdx=self.ui.whoShowedClueBotCmbBox.currentIndex(),
+                                            suspectIdx=guessCardIdx)
+        elif guessCardIdx < len(self.suspectNames) + len(self.weaponNames):
+            self.clue_bot.submit_cluebot_turn(playerIdx=self.ui.whoShowedClueBotCmbBox.currentIndex(),
+                                            weaponIdx=guessCardIdx - len(self.suspectNames))
+        elif guessCardIdx < len(self.suspectNames) + len(self.weaponNames) + len(self.roomNames):
+            self.clue_bot.submit_cluebot_turn(playerIdx=self.ui.whoShowedClueBotCmbBox.currentIndex(),
+                                            roomIdx=guessCardIdx - len(self.suspectNames) - len(self.weaponNames))
+
+        self.update_ui()
