@@ -233,8 +233,15 @@ class MainWindow(QMainWindow):
 
     def update_info_frame(self):
 
-        self.ui.turnCounterLbl.setText("Turn " + str(self.clue_bot.turn_counter))
-        self.ui.playerTurnLbl.setText("Player " + str(self.clue_bot.current_player)) #TODO convert to string
+        self.ui.turnCounterLbl.setText("Turn: " + str(self.clue_bot.turn_counter))
+        print(self.clue_bot.current_player)
+
+        currentPlayerName = self.ui.whoShowedClueBotCmbBox.itemText(self.clue_bot.current_player)
+        print(currentPlayerName)
+        self.ui.playerTurnLbl.setText("Player: " + currentPlayerName)
+        self.ui.playerGuessPromptLbl.setText("What did " + currentPlayerName + " guess?")
+        self.ui.submitTurnBtn.setText("Submit " + currentPlayerName + " Turn")
+
         if self.clue_bot.is_cluebot_turn():
             self.ui.otherPlayerPlayFrame.hide()
             self.ui.cluebotPlayFrame.show()

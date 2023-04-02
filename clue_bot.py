@@ -141,13 +141,21 @@ class ClueBot:
         self.current_player = (self.current_player + 1) % len(self.players)
 
     '''
+    THIS IS WHERE THE MAGIC HAPPENS
+    '''
+    def process_results(self):
+        pass
+
+    '''
     Submit another player's turn for our history which we will process later
     '''
     def submit_turn(self, playerIdx, suspectIdx, weaponIdx, roomIdx):
         self.playerPastGuesses[playerIdx].append( (suspectIdx, weaponIdx, roomIdx) )
+        self.process_results()
         self.increment_turn()
 
     '''
+    Submit a ClueBot turn where we prompted a guess and got something in return
     '''
     def submit_cluebot_turn(self, playerIdx, suspectIdx=None, weaponIdx=None, roomIdx=None):
         if suspectIdx != None:
@@ -156,6 +164,7 @@ class ClueBot:
             self.player_has_weapon(playerIdx, weaponIdx)
         if roomIdx != None:
             self.player_has_room(playerIdx, roomIdx)
+        self.process_results()
         self.increment_turn()
 
     '''

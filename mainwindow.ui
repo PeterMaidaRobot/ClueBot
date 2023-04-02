@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>1317</height>
+    <height>1373</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -96,14 +96,14 @@ color: #140D07; /* dark brown */</string>
           <item>
            <widget class="QLabel" name="turnCounterLbl">
             <property name="text">
-             <string>Turn 0</string>
+             <string>Turn: 0</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QLabel" name="playerTurnLbl">
             <property name="text">
-             <string>Player X Turn</string>
+             <string>Player: X Turn</string>
             </property>
            </widget>
           </item>
@@ -191,7 +191,7 @@ color: #140D07; /* dark brown */</string>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_3">
              <item>
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="playerGuessPromptLbl">
                <property name="text">
                 <string>What did PlayerX guess?</string>
                </property>
