@@ -15,10 +15,16 @@ class ClueBot:
         self.weapons = weapons
         self.rooms = rooms
 
+        # Find out what index the clue bot is at since we will use that index a lot
         self.clueBotPlayerIdx = -1
         for playerIdx in range(len(players)):
             if players[playerIdx] == 'Clue Bot':
                 self.clueBotPlayerIdx = playerIdx
+
+        # Initialize our past guesses vbox history
+        self.playerPastGuesses = []
+        for playerIdx in range(len(players)):
+            self.playerPastGuesses.append([])
 
         self.current_player = 0
         self.turn_counter = 0
@@ -109,17 +115,31 @@ class ClueBot:
                 self.roomGuessCard[playerIdx][roomIdx] = HasCard.NO
 
 
+    '''
+    return the value of the suspect cell at this matrix index
+    '''
     def get_suspect_guess(self, playerIdx, suspectIdx):
         return self.suspectGuessCard[playerIdx][suspectIdx]
 
+    '''
+    return the value of the weapon cell at this matrix index
+    '''
     def get_weapon_guess(self, playerIdx, weaponIdx):
         return self.weaponGuessCard[playerIdx][weaponIdx]
 
+    '''
+    return the value of the room cell at this matrix index
+    '''
     def get_room_guess(self, playerIdx, roomIdx):
         return self.roomGuessCard[playerIdx][roomIdx]
 
-    def submit_turn(self):
-        print("test")
+    '''
+    Submit another player's turn for our history which we will process later
+    '''
+    def submit_turn(self, playerIdx, suspectIdx, weaponIdx, roomIdx):
+        self.playerPastGuesses[playerIdx].append( (suspectIdx, weaponIdx, roomIdx) )
 
+    '''
+    '''
     def submit_cluebot_turn(self):
         print("test")

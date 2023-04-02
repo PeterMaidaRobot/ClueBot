@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout, QTableWidgetItem
+from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout, QTableWidgetItem, QFrame
 from ui_mainwindow import Ui_MainWindow
 from clue_bot import ClueBot
 
@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.resize(1200, 800)
+        self.resize(1500, 800)
 
         # Connect signals
         self.ui.playGameBtn.clicked.connect(self.deal_cards)
@@ -155,19 +155,10 @@ class MainWindow(QMainWindow):
             for col in range(self.ui.guessCardTable.columnCount()):
                 self.ui.guessCardTable.setItem(row, col, QTableWidgetItem(self.get_cell_guess(row, col)))
 
-        # Create the previous guesses vboxes
-        self.previousGuesses = []
-        hLayout = QHBoxLayout()
-        for player in self.playerNames:
-            playerVbox = QVBoxLayout()
-            playerVbox.addWidget(QLabel(player))
-            hLayout.addItem(playerVbox)
-            self.previousGuesses.append(playerVbox)
-
-        for i in range(len(self.previousGuesses)):
-            for c in range(5):
-                self.previousGuesses[i].addWidget(QLabel("test"))
-        self.ui.previousGuessFrame.setLayout(hLayout)
+        # Create the previous guesses table
+        self.ui.previousGuessTable.setColumnCount(len(self.playerNames))
+        self.ui.previousGuessTable.setHorizontalHeaderLabels(self.playerNames)
+        self.ui.previousGuessTable.verticalHeader().hide()
 
 
 
@@ -217,10 +208,49 @@ class MainWindow(QMainWindow):
                 self.ui.guessCardTable.item(row, col).setText( self.get_cell_guess(row, col) )
 
     '''
-    This will update the guess history tuple vbox for the players
+    This will destroy and re-create the guess history tuple vbox for the players
     '''
     def update_guess_history(self):
-        pass
+
+#        # Clear
+#        print(self.ui.previousGuessFrame.layout().count())
+#        for playerIdx in reversed(range(self.ui.previousGuessFrame.layout().count())):
+#            vbox = self.ui.previousGuessFrame.layout().itemAt(playerIdx)
+
+#            print(vbox.count())
+#            for i in reversed(range(vbox.count())):
+#                vbox.itemAt(i).widget().setParent(None)
+#            print(self.ui.previousGuessFrame.layout().itemAt(playerIdx))
+
+
+#        # Create the previous guesses vboxes with the player headers
+#        self.previousGuesses = []
+#        hLayout = QHBoxLayout()
+#        for player in self.playerNames:
+#            playerVbox = QVBoxLayout()
+#            playerVbox.addWidget(QLabel(player))
+#            hLayout.addItem(playerVbox)
+#            self.previousGuesses.append(playerVbox)
+
+
+        self.ui.previousGuessTable.setRowCount(0)
+
+        # Fill in every players past guesses
+        for playerIdx in range(len(self.clue_bot.playerPastGuesses)):
+
+            # Increase the row count if we have to
+            if len(self.clue_bot.playerPastGuesses[playerIdx]) > self.ui.previousGuessTable.rowCount():
+                self.ui.previousGuessTable.setRowCount(len(self.clue_bot.playerPastGuesses[playerIdx]))
+
+            for guessIdx, guess in enumerate(self.clue_bot.playerPastGuesses[playerIdx]):
+                print(guess)
+                guessCell = QLabel( str(guess[0]) + " " + str(guess[1]) + " " + str(guess[2]) )
+                self.ui.previousGuessTable.setCellWidget(guessIdx, playerIdx, guessCell)
+
+
+
+        #self.ui.previousGuessFrame.setLayout(hLayout)
+
 
     '''
     This will update everything on the UI after a guess has occured
@@ -234,9 +264,14 @@ class MainWindow(QMainWindow):
         print(self.ui.whoShowedCardCmbBox.currentText() + " showed one of (" +
             self.ui.playerGuessSuspectCmbBox.currentText() + ", " +
             self.ui.playerGuessWeaponCmbBox.currentText() + ", " +
-            self.ui.whoShowedCardCmbBox.currentText() + ")")
+            self.ui.playerGuessRoomCmbBox.currentText() + ")")
 
-        self.clue_bot.submit_turn()
+        # Send ClueBot the index values, not the text
+        self.clue_bot.submit_turn(playerIdx=self.ui.whoShowedCardCmbBox.currentIndex(),
+                                suspectIdx=self.ui.playerGuessSuspectCmbBox.currentIndex(),
+                                weaponIdx=self.ui.playerGuessWeaponCmbBox.currentIndex(),
+                                roomIdx=self.ui.playerGuessRoomCmbBox.currentIndex())
+
         self.update_ui()
 
 
