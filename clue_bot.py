@@ -134,10 +134,18 @@ class ClueBot:
         return self.roomGuessCard[playerIdx][roomIdx]
 
     '''
+    Increment the turn counter, and player index (wrapping as necessary)
+    '''
+    def increment_turn(self):
+        self.turn_counter = self.turn_counter + 1
+        self.current_player = (self.current_player + 1) % len(self.players)
+
+    '''
     Submit another player's turn for our history which we will process later
     '''
     def submit_turn(self, playerIdx, suspectIdx, weaponIdx, roomIdx):
         self.playerPastGuesses[playerIdx].append( (suspectIdx, weaponIdx, roomIdx) )
+        self.increment_turn()
 
     '''
     '''
@@ -148,4 +156,11 @@ class ClueBot:
             self.player_has_weapon(playerIdx, weaponIdx)
         if roomIdx != None:
             self.player_has_room(playerIdx, roomIdx)
+        self.increment_turn()
+
+    '''
+    Return True if it is cluebot's turn, False otherwise
+    '''
+    def is_cluebot_turn(self):
+        return self.current_player == self.clueBotPlayerIdx
 

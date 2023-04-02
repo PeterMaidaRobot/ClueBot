@@ -185,6 +185,8 @@ class MainWindow(QMainWindow):
         self.ui.dealtCardsFrame.setVisible(False)
         self.ui.gamePlayFrame.setVisible(True)
 
+        self.update_info_frame()
+
 
     '''
     '''
@@ -212,27 +214,7 @@ class MainWindow(QMainWindow):
     '''
     def update_guess_history(self):
 
-#        # Clear
-#        print(self.ui.previousGuessFrame.layout().count())
-#        for playerIdx in reversed(range(self.ui.previousGuessFrame.layout().count())):
-#            vbox = self.ui.previousGuessFrame.layout().itemAt(playerIdx)
-
-#            print(vbox.count())
-#            for i in reversed(range(vbox.count())):
-#                vbox.itemAt(i).widget().setParent(None)
-#            print(self.ui.previousGuessFrame.layout().itemAt(playerIdx))
-
-
-#        # Create the previous guesses vboxes with the player headers
-#        self.previousGuesses = []
-#        hLayout = QHBoxLayout()
-#        for player in self.playerNames:
-#            playerVbox = QVBoxLayout()
-#            playerVbox.addWidget(QLabel(player))
-#            hLayout.addItem(playerVbox)
-#            self.previousGuesses.append(playerVbox)
-
-
+        # Clear
         self.ui.previousGuessTable.setRowCount(0)
 
         # Fill in every players past guesses
@@ -249,7 +231,16 @@ class MainWindow(QMainWindow):
 
 
 
-        #self.ui.previousGuessFrame.setLayout(hLayout)
+    def update_info_frame(self):
+
+        self.ui.turnCounterLbl.setText("Turn " + str(self.clue_bot.turn_counter))
+        self.ui.playerTurnLbl.setText("Player " + str(self.clue_bot.current_player)) #TODO convert to string
+        if self.clue_bot.is_cluebot_turn():
+            self.ui.otherPlayerPlayFrame.hide()
+            self.ui.cluebotPlayFrame.show()
+        else:
+            self.ui.otherPlayerPlayFrame.show()
+            self.ui.cluebotPlayFrame.hide()
 
 
     '''
@@ -258,6 +249,7 @@ class MainWindow(QMainWindow):
     def update_ui(self):
         self.update_guess_card()
         self.update_guess_history()
+        self.update_info_frame()
 
 
     def submit_turn(self):
