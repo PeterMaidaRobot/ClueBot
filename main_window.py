@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QLineEdit, QCheckBox, QLabel, QHBoxLayout, QVBoxLayout, QTableWidgetItem, QFrame
 from ui_mainwindow import Ui_MainWindow
-from clue_bot import ClueBot
+from clue_bot import ClueBot, CardType, HasCard
 
 def func():
     print("heyyee")
@@ -209,12 +209,26 @@ class MainWindow(QMainWindow):
             for col in range(self.ui.guessCardTable.columnCount()):
                 self.ui.guessCardTable.item(row, col).setText( self.get_cell_guess(row, col) )
 
+
+    '''
+    Return the input text in the color format it should be in
+    '''
+    def colorText(self, text, hasCard):
+        coloredText = text
+        if hasCard == HasCard.YES:
+            coloredText = "<font color=\'green\'>" + text + "</font>"
+        elif hasCard == HasCard.MAYBE:
+            coloredText = "<font color=\'black\'>" + text + "</font>"
+        elif hasCard == HasCard.NO:
+            coloredText = "<font color=\'red\'>" + text + "</font>"
+        return coloredText
+
     '''
     This will destroy and re-create the guess history tuple vbox for the players
     '''
     def update_guess_history(self):
 
-        # Clear
+        # Clear the table and re-draw the entire thing
         self.ui.previousGuessTable.setRowCount(0)
 
         # Fill in every players past guesses
@@ -225,9 +239,19 @@ class MainWindow(QMainWindow):
                 self.ui.previousGuessTable.setRowCount(len(self.clue_bot.playerPastGuesses[playerIdx]))
 
             for guessIdx, guess in enumerate(self.clue_bot.playerPastGuesses[playerIdx]):
-                print(guess)
-                guessCell = QLabel( str(guess[0]) + " " + str(guess[1]) + " " + str(guess[2]) )
-                self.ui.previousGuessTable.setCellWidget(guessIdx, playerIdx, guessCell)
+                suspectIdx, hasSuspect = guess[CardType.SUSPECT]
+                weaponIdx, hasWeapon = guess[CardType.WEAPON]
+                roomIdx, hasRoom = guess[CardType.ROOM]
+
+                formattedLabelTxt = ""
+                formattedLabelTxt += self.colorText(self.suspectNames[suspectIdx], hasSuspect) + ", "
+                formattedLabelTxt += self.colorText(self.weaponNames[weaponIdx], hasWeapon) + ", "
+                formattedLabelTxt += self.colorText(self.roomNames[roomIdx], hasRoom)
+                guessCellLbl = QLabel(formattedLabelTxt)
+                font = guessCellLbl.font()
+                font.setPointSize(10)
+                guessCellLbl.setFont(font)
+                self.ui.previousGuessTable.setCellWidget(guessIdx, playerIdx, guessCellLbl)
 
 
 

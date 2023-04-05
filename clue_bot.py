@@ -1,10 +1,15 @@
 # This Python file uses the following encoding: utf-8
 
 # Create a fake Enum for now
-class HasCard():
+class HasCard:
     NO = 'NO'
     YES = 'YES'
     MAYBE = 'MAYBE'
+
+class CardType:
+    SUSPECT = 'SUSPECT'
+    WEAPON = 'WEAPON'
+    ROOM = 'ROOM'
 
 
 class ClueBot:
@@ -141,16 +146,39 @@ class ClueBot:
         self.current_player = (self.current_player + 1) % len(self.players)
 
     '''
+    Update the status of previous guesses if this person has that card or not
+    '''
+    def updatePreviousGuesses(self):
+        # Loop through every player and update all 3 of their cards
+        for playerIdx in range(len(self.players)):
+            playerGuesses = self.playerPastGuesses[playerIdx]
+            for guessIdx in range(len(playerGuesses)):
+                # Grab the suspect index, and then update the hasCard status based on our guess card
+                suspectIdx = playerGuesses[guessIdx][CardType.SUSPECT][0]
+                playerGuesses[guessIdx][CardType.SUSPECT] = (suspectIdx, self.suspectGuessCard[playerIdx][suspectIdx])
+
+                weaponIdx = playerGuesses[guessIdx][CardType.WEAPON][0]
+                playerGuesses[guessIdx][CardType.WEAPON] = (weaponIdx, self.weaponGuessCard[playerIdx][weaponIdx])
+
+                roomIdx = playerGuesses[guessIdx][CardType.ROOM][0]
+                playerGuesses[guessIdx][CardType.ROOM] = (roomIdx, self.roomGuessCard[playerIdx][roomIdx])
+
+    '''
     THIS IS WHERE THE MAGIC HAPPENS
     '''
     def process_results(self):
+        self.updatePreviousGuesses() # TODO idk what the order of this and the other stuff should be, maybe loop until no more updates...?
         pass
+        for playerIdx in range(len(self.players)):
+            print(self.playerPastGuesses[playerIdx])
 
     '''
     Submit another player's turn for our history which we will process later
     '''
     def submit_turn(self, playerIdx, suspectIdx, weaponIdx, roomIdx):
-        self.playerPastGuesses[playerIdx].append( (suspectIdx, weaponIdx, roomIdx) )
+        self.playerPastGuesses[playerIdx].append( { CardType.SUSPECT: (suspectIdx, HasCard.MAYBE),
+                                                    CardType.WEAPON: (weaponIdx, HasCard.MAYBE),
+                                                    CardType.ROOM: (roomIdx, HasCard.MAYBE) } )
         self.process_results()
         self.increment_turn()
 
