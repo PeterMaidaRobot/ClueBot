@@ -149,28 +149,76 @@ class ClueBot:
     Update the status of previous guesses if this person has that card or not
     '''
     def updatePreviousGuesses(self):
-        # Loop through every player and update all 3 of their cards
+        updateOccured = False
+        # Loop through every player and update all 3 of their cards based off the current card
         for playerIdx in range(len(self.players)):
             playerGuesses = self.playerPastGuesses[playerIdx]
             for guessIdx in range(len(playerGuesses)):
-                # Grab the suspect index, and then update the hasCard status based on our guess card
+                # Grab the suspect index, and then update the hasCard status based on our guess card.
                 suspectIdx = playerGuesses[guessIdx][CardType.SUSPECT][0]
-                playerGuesses[guessIdx][CardType.SUSPECT] = (suspectIdx, self.suspectGuessCard[playerIdx][suspectIdx])
+                hasSuspect = self.suspectGuessCard[playerIdx][suspectIdx]
 
                 weaponIdx = playerGuesses[guessIdx][CardType.WEAPON][0]
-                playerGuesses[guessIdx][CardType.WEAPON] = (weaponIdx, self.weaponGuessCard[playerIdx][weaponIdx])
+                hasWeapon = self.weaponGuessCard[playerIdx][weaponIdx]
 
                 roomIdx = playerGuesses[guessIdx][CardType.ROOM][0]
-                playerGuesses[guessIdx][CardType.ROOM] = (roomIdx, self.roomGuessCard[playerIdx][roomIdx])
+                hasRoom = self.roomGuessCard[playerIdx][roomIdx]
+
+                # If we have two NO's in our tuple, then the last one has to be a yes!
+                if hasSuspect == HasCard.NO and hasWeapon == HasCard.NO and hasRoom == HasCard.MAYBE:
+                    hasRoom = HasCard.YES
+                    updateOccured = True
+                elif hasSuspect == HasCard.NO and hasWeapon == HasCard.MAYBE and hasRoom == HasCard.NO:
+                    hasWeapon = HasCard.YES
+                    updateOccured = True
+                elif hasSuspect == HasCard.MAYBE and hasWeapon == HasCard.NO and hasRoom == HasCard.NO:
+                    hasSuspect = HasCard.YES
+                    updateOccured = True
+
+                playerGuesses[guessIdx][CardType.WEAPON] = (weaponIdx, hasWeapon)
+                playerGuesses[guessIdx][CardType.SUSPECT] = (suspectIdx, hasSuspect)
+                playerGuesses[guessIdx][CardType.ROOM] = (roomIdx, hasRoom)
+
+        return updateOccured
+
+    '''
+    Processes the previous guesses and updates the cards with new findings
+    '''
+    def processPreviousGuesses(self):
+        # Loop through every player and update all 3 of their cards based off the current card
+        for playerIdx in range(len(self.players)):
+            playerGuesses = self.playerPastGuesses[playerIdx]
+            for guessIdx in range(len(playerGuesses)):
+                # Grab the suspect index, and then update the hasCard status based on our guess card.
+                suspectIdx = playerGuesses[guessIdx][CardType.SUSPECT][0]
+                hasSuspect = playerGuesses[guessIdx][CardType.SUSPECT][1]
+
+                # If our card was uncertain, but our previous guess tuple wasn't, then update the card with the tuple value
+                if self.suspectGuessCard[playerIdx][suspectIdx] == HasCard.MAYBE and hasSuspect != HasCard.MAYBE:
+                    self.suspectGuessCard[playerIdx][suspectIdx] = hasSuspect
+
+
+                weaponIdx = playerGuesses[guessIdx][CardType.WEAPON][0]
+                hasWeapon = playerGuesses[guessIdx][CardType.WEAPON][1]
+
+                if self.weaponGuessCard[playerIdx][weaponIdx] == HasCard.MAYBE and hasWeapon != HasCard.MAYBE:
+                    self.weaponGuessCard[playerIdx][weaponIdx] = hasWeapon
+
+
+                roomIdx = playerGuesses[guessIdx][CardType.ROOM][0]
+                hasRoom = playerGuesses[guessIdx][CardType.ROOM][1]
+
+                if self.roomGuessCard[playerIdx][roomIdx] == HasCard.MAYBE and hasRoom != HasCard.MAYBE:
+                    self.roomGuessCard[playerIdx][roomIdx] = hasRoom
 
     '''
     THIS IS WHERE THE MAGIC HAPPENS
     '''
     def process_results(self):
-        self.updatePreviousGuesses() # TODO idk what the order of this and the other stuff should be, maybe loop until no more updates...?
-        pass
-        for playerIdx in range(len(self.players)):
-            print(self.playerPastGuesses[playerIdx])
+        updateOccured = True
+        while updateOccured:
+            self.processPreviousGuesses()
+            updateOccured = self.updatePreviousGuesses() # TODO idk what the order of this and the other stuff should be
 
     '''
     Submit another player's turn for our history which we will process later
